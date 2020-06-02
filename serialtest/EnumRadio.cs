@@ -11,6 +11,8 @@ namespace serialtest
     {
         [Description("Null Radio")]
         NULL_RADIO = 0x00,
+        [Description("IC-756 Pro II")]
+        IC_756ProII = 0x64,
         [Description("IC-271")]
         IC_271 = 0x20,
         [Description("IC-275")]
@@ -66,9 +68,7 @@ namespace serialtest
         [Description("IC-756")]
         IC_756 = 0x50,
         [Description("IC-756 Pro")]
-        IC_756Pro = 0x5C,
-        [Description("IC-756 Pro II")]
-        IC_756ProII = 0x64,
+        IC_756Pro = 0x5C,       
         [Description("IC-756 Pro III")]
         IC_756ProIII = 0x6e,
         [Description("IC-761")]

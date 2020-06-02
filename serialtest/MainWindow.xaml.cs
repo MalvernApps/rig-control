@@ -211,5 +211,16 @@ namespace serialtest
         {
 
         }
+
+        /// <summary>
+        /// a simple test function
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RunTest(object sender, RoutedEventArgs e)
+        {
+            int t = (int) radio.SelectedValue;
+            Console.WriteLine(radio.SelectedValue);
+        }
     }
 }
