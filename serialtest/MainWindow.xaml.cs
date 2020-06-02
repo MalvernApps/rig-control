@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -144,9 +145,10 @@ namespace serialtest
             SendHeader(b);
 
             b.Add(0x05);
-
+            double f = double.Parse(Freq.Text);
+            int fi = (int) (f*1000000);
             uint firstInt = 14250000;
-            var array = IntToBCD5(firstInt);
+            var array = IntToBCD5((uint)fi);
 
             for (int x = 0; x < array.Length; x++)
                 b.Add(array[x]);
