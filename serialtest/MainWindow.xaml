@@ -6,8 +6,20 @@
         xmlns:local="clr-namespace:serialtest"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Closing="closing">
+
+
+
     <Grid VerticalAlignment="Center">
+        
         <StackPanel HorizontalAlignment="Center">
+            <Label Content="14.5000" FontFamily="Ni7seg" FontSize="30" Height="45" FontWeight="Bold" Foreground="Blue">
+                <Label.Effect>
+                    <BlurEffect Radius="4">
+
+                    </BlurEffect>
+                </Label.Effect>
+            </Label>
+       
             <TextBlock Width="120" Height="20">14.5000</TextBlock>
             <Button Width="120" Height="20" Click="Connect">Connect</Button>
             <Button Width="120" Height="20" Click="SendData">Send</Button>

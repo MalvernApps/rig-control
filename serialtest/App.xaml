@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:serialtest"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <FontFamily x:Key="7Seg"></FontFamily>
     </Application.Resources>
 </Application>
