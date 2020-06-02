@@ -35,12 +35,12 @@
             </Label>
        
             <TextBlock Width="120" Height="20">14.5000</TextBlock>
-            <Button Width="120" Height="20" Click="Connect">Connect</Button>
-            <Button Width="120" Height="20" Click="SendData">Send</Button>
-            <Button Width="120" Height="20" Click="SendFreq">Send Freq</Button>
-            <Button Width="120" Height="20" Click="Get_Signal_Strength">Get Signal Strength</Button>
-            <ComboBox x:Name="modulation" Width="120"  ItemsSource="{Binding Source={StaticResource modulation}}" SelectedIndex="2"></ComboBox>
-            <ComboBox x:Name="radio" Width="120"  ItemsSource="{Binding Source={StaticResource radios}}" SelectedIndex="2"></ComboBox>
+            <Button Width="120" Height="20" Click="Connect" Margin="0,10,0,0">Connect</Button>
+            <Button Width="120" Height="20" Click="SendData" Margin="0,10,0,0">Set Modulation</Button>
+            <Button Width="120" Height="20" Click="SendFreq" Margin="0,10,0,0">Send Freq</Button>
+                <Button Width="120" Height="20" Click="Get_Signal_Strength" Margin="0,10,0,0">Get Signal Strength</Button>
+                <ComboBox x:Name="modulation" Width="120"  Margin="0,10,0,0" ItemsSource="{Binding Source={StaticResource modulation}}" SelectedIndex="2"></ComboBox>
+                <ComboBox x:Name="radio" Width="120"  Margin="0,10,0,0" ItemsSource="{Binding Source={StaticResource radios}}" SelectedIndex="2"></ComboBox>
         </StackPanel>
     </Grid>
 </Window>

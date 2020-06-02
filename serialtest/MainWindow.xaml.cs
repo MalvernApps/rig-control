@@ -92,15 +92,6 @@ namespace serialtest
             {
                 Console.Write(string.Format("Thread1 {0}", i));
             }
-
-            //while (true)
-            //{
-            //    Console.WriteLine("t");
-            //    string a = _serialPort.ReadExisting();
-            //    Console.WriteLine(a);
-            //    System.Threading.Thread.Sleep(200);
-            //}
-       
         }
 
         private void Signal_Strength(object sender, RoutedEventArgs e)
@@ -120,8 +111,8 @@ namespace serialtest
             b.Add(0xfe);
             b.Add(0x64);
             b.Add(0xe0);
-            b.Add(0x15);
-            b.Add(0x02);
+            b.Add(0x06);
+            b.Add( (byte) modulation.SelectedIndex);
            // b.Add(0x00);
             b.Add(0xfd);
 
