@@ -16,6 +16,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+// this brilliant software has bee nrealy useful on 14 day trial.
+// https://www.eltima.com/products/serial-port-monitor/
+
 namespace serialtest
 {
 
@@ -221,8 +224,24 @@ namespace serialtest
         /// <param name="e"></param>
         private void RunTest(object sender, RoutedEventArgs e)
         {
-            int t = (int) radio.SelectedValue;
-            Console.WriteLine(radio.SelectedValue);
+            Console.WriteLine("Send");
+
+            //http://www.plicht.de/ekki/civ/civ-p32.html
+
+            List<byte> b = new List<byte>();
+
+            // http://www.plicht.de/ekki/civ/civ-p41.html
+            b.Add(0xfe);
+            b.Add(0xfe);
+            b.Add(0x64);
+            b.Add(0xe0);
+            b.Add(0x15);
+            b.Add(0x01);
+            //b.Add(0x00);
+            b.Add(0xfd);
+
+            byte[] d = b.ToArray();
+            _serialPort.Write(d, 0, d.Length);
         }
     }
 }
