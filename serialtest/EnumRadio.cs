@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace serialtest
 {
-    public enum Radio
+    public enum EnumRadio
     {
         [Description("Null Radio")]
         NULL_RADIO = 0x00,

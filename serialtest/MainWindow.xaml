@@ -3,11 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:serialtest"
+        xmlns:local="clr-namespace:serialtest"       
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Closing="closing">
 
+    <Window.Resources>
+        <ObjectDataProvider x:Key="modulation" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:EnumModulation"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
 
+        <ObjectDataProvider x:Key="radios" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:EnumRadio"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+    </Window.Resources>
 
     <Grid VerticalAlignment="Center">
         
@@ -24,6 +38,9 @@
             <Button Width="120" Height="20" Click="Connect">Connect</Button>
             <Button Width="120" Height="20" Click="SendData">Send</Button>
             <Button Width="120" Height="20" Click="SendFreq">Send Freq</Button>
+            <Button Width="120" Height="20" Click="Get_Signal_Strength">Get Signal Strength</Button>
+            <ComboBox x:Name="modulation" Width="120"  ItemsSource="{Binding Source={StaticResource modulation}}" SelectedIndex="2"></ComboBox>
+            <ComboBox x:Name="radio" Width="120"  ItemsSource="{Binding Source={StaticResource radios}}" SelectedIndex="2"></ComboBox>
         </StackPanel>
     </Grid>
 </Window>

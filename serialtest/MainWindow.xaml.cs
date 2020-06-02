@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 
 namespace serialtest
 {
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -32,6 +34,8 @@ namespace serialtest
             //var array = IntToBCD5(firstInt);
             //var outInt = BCD5ToInt(array);
             //MessageBox.Show(outInt.ToString());
+
+            //modulation.ItemsSource = EnumModulation.GetValues(e.NewValue as Type); 
         }
 
         public uint BCD5ToInt(byte[] bcd)
@@ -69,19 +73,13 @@ namespace serialtest
             Console.WriteLine("connect");
 
             _serialPort = new SerialPort();
-            _serialPort.PortName = "COM4";//Set your board COM
+            _serialPort.PortName = "COM7";//Set your board COM
             _serialPort.BaudRate = 9600;
             _serialPort.StopBits = StopBits.One;
             _serialPort.Parity = Parity.None;
             _serialPort.DataBits = 8;
             _serialPort.Handshake = Handshake.None;
-            _serialPort.Open();
-            //while (true)
-            //{
-            //    string a = _serialPort.ReadExisting();
-            //    Console.WriteLine(a);
-            //    System.Threading.Thread.Sleep(200);
-            //}
+            _serialPort.Open();            
 
             //Thread tid1 = new Thread(new ThreadStart(Thread1));
 
@@ -102,9 +100,14 @@ namespace serialtest
             //    Console.WriteLine(a);
             //    System.Threading.Thread.Sleep(200);
             //}
+       
         }
 
-        private void SendData(object sender, RoutedEventArgs e)
+        private void Signal_Strength(object sender, RoutedEventArgs e)
+        {
+        }
+
+            private void SendData(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Send");
 
@@ -117,8 +120,8 @@ namespace serialtest
             b.Add(0xfe);
             b.Add(0x64);
             b.Add(0xe0);
-            b.Add(0x06);
-            b.Add(0x01);
+            b.Add(0x15);
+            b.Add(0x02);
            // b.Add(0x00);
             b.Add(0xfd);
 
@@ -151,7 +154,7 @@ namespace serialtest
 
             b.Add(0x05);
 
-            uint firstInt = 14500000;
+            uint firstInt = 14250000;
             var array = IntToBCD5(firstInt);
 
             for (int x = 0; x < array.Length; x++)
@@ -211,6 +214,11 @@ namespace serialtest
         {
             if (_serialPort != null && _serialPort.IsOpen) 
                 _serialPort.Close();
+        }
+
+        private void Get_Signal_Strength(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
