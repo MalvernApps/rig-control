@@ -77,19 +77,41 @@ namespace serialtest
             Console.WriteLine("connect");
 
             _serialPort = new SerialPort();
-            _serialPort.PortName = "COM7";//Set your board COM
+            _serialPort.PortName = "COM8";//Set your board COM
             _serialPort.BaudRate = 9600;
             _serialPort.StopBits = StopBits.One;
             _serialPort.Parity = Parity.None;
             _serialPort.DataBits = 8;
             _serialPort.Handshake = Handshake.None;
-            _serialPort.Open();            
+            _serialPort.Open();
+            _serialPort.DataReceived += _serialPort_DataReceived;
 
             //Thread tid1 = new Thread(new ThreadStart(Thread1));
 
-            Thread thread1 = new Thread(MainWindow.DoWork);
-            thread1.Start();
+            //Thread thread1 = new Thread(MainWindow.DoWork);
+            //thread1.Start();
         }
+
+        private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            // wait for final bytes to arrive as we are here pretty fast
+            Thread.Sleep(100);
+
+            int bytestoread = _serialPort.BytesToRead;
+
+            Console.WriteLine("bytes available" + bytestoread );
+
+            byte[] buffer = new byte[bytestoread];
+            _serialPort.Read(buffer, 0, bytestoread);
+
+            for(int x=0;x<bytestoread; x++)
+            {
+                Console.WriteLine("x: " + buffer[x]);
+            }
+
+            _serialPort.DiscardInBuffer();
+        }
+
         public static void Thread1()
         {
             for (int i = 1; i <= 10; i++)
@@ -176,8 +198,12 @@ namespace serialtest
                 if (_serialPort.IsOpen)
                 {
                     // Console.WriteLine("t");
-                    string a = _serialPort.ReadExisting();
-                    if (a != string.Empty) Console.WriteLine(a);
+                    //string a = _serialPort.ReadExisting();
+                    int bytestoread = _serialPort.BytesToRead;
+                    byte[] buffer = new byte[bytestoread];
+                    _serialPort.Read(buffer, 0, bytestoread);
+
+                    Console.WriteLine(bytestoread);
                 }
                 System.Threading.Thread.Sleep(200);
             }
@@ -236,7 +262,7 @@ namespace serialtest
             b.Add(0x64);
             b.Add(0xe0);
             b.Add(0x15);
-            b.Add(0x01);
+            b.Add(0x02);    // S-meter level
             //b.Add(0x00);
             b.Add(0xfd);
 
