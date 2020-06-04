@@ -25,18 +25,27 @@
 
     <Grid VerticalAlignment="Center">
 
+       
+
         <StackPanel HorizontalAlignment="Center">
-            <TextBox x:Name="Freq"  Text="14.2500" FontFamily="Ni7seg" FontSize="30" Height="45" Width="150"  FontWeight="Bold" Foreground="Blue">
-                <TextBox.Effect>
-                    <BlurEffect Radius="2">
 
-                    </BlurEffect>
-                </TextBox.Effect>
-            </TextBox>
+            <Button x:Name="connect"  Width="120" Height="20" Click="Connect" Margin="0,10,0,10">Connect</Button>
 
-            <Button Width="120" Height="20" Click="Connect" Margin="0,10,0,0">Connect</Button>
+            <StackPanel Orientation="Horizontal">
+                <Label FontFamily="Ni7seg" FontSize="20" VerticalAlignment="Center">Frequency:</Label>
+                <TextBox x:Name="Freq"  Text="14.2500" Background="Gold" FontFamily="Ni7seg" FontSize="30" Height="45" Width="150"  FontWeight="Bold" Foreground="Blue">
+                    <TextBox.Effect>
+                        <BlurEffect Radius="2">
+
+                        </BlurEffect>
+                    </TextBox.Effect>
+                </TextBox>
+                <Button Width="120" Height="20" VerticalAlignment="Center" Click="SendFreq" Margin="0,10,0,0">Send Freq</Button>
+            </StackPanel>
+
+           
             <Button Width="120" Height="20" Click="SendData" Margin="0,10,0,0">Set Modulation</Button>
-            <Button Width="120" Height="20" Click="SendFreq" Margin="0,10,0,0">Send Freq</Button>
+            
             <Button Width="120" Height="20" Click="Get_Signal_Strength" Margin="0,10,0,0">Get Signal Strength</Button>
             <ComboBox x:Name="modulation" Width="120"  Margin="0,10,0,0" Background="pink" ItemsSource="{Binding Source={StaticResource modulation}}" SelectedIndex="2"></ComboBox>
             <ComboBox x:Name="radio" Width="120"  Margin="0,10,0,0" Background="pink" ItemsSource="{Binding Source={StaticResource radios}}" SelectedIndex="0"></ComboBox>

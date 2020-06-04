@@ -90,6 +90,9 @@ namespace serialtest
             //Thread tid1 = new Thread(new ThreadStart(Thread1));
             //Thread thread1 = new Thread(MainWindow.DoWork);
             //thread1.Start();
+
+            // diable connect so we have no user mistakes causing a crash.
+            connect.IsEnabled = false;
         }
 
         static List<byte> newPacket;
@@ -100,7 +103,9 @@ namespace serialtest
         /// <param name="data"></param>
         private void ReCreateIcomPacket( byte [] data )
         {
-            for(int x=1;x<data.Length;x++)
+            
+
+            for (int x=1;x<data.Length;x++)
             {
                 if ( data[x] == 0xFe && data[x-1] == 0xFE )
                 {
@@ -119,6 +124,14 @@ namespace serialtest
                 }
                 else
                 {
+                    // some error checking
+                    if (newPacket == null)
+                    {
+                        newPacket = new List<byte>();
+                        newPacket.Add(0xFE);
+                        newPacket.Add(0xFE);
+                    }
+
                     newPacket.Add( data[x] );
                 }
             }
@@ -298,7 +311,7 @@ namespace serialtest
             b.Add(0xe0);
             b.Add(0x15);
             b.Add(0x02);    // S-meter level, return 2 btes of data
-            b.Add(0x00);
+            //b.Add(0x00);
             b.Add(0xfd);
 
             byte[] d = b.ToArray();
