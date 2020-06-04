@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
@@ -87,27 +88,61 @@ namespace serialtest
             _serialPort.DataReceived += _serialPort_DataReceived;
 
             //Thread tid1 = new Thread(new ThreadStart(Thread1));
-
             //Thread thread1 = new Thread(MainWindow.DoWork);
             //thread1.Start();
+        }
+
+        static List<byte> newPacket;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        private void ReCreateIcomPacket( byte [] data )
+        {
+            for(int x=1;x<data.Length;x++)
+            {
+                if ( data[x] == 0xFe && data[x-1] == 0xFE )
+                {
+                    // we have a packet start
+                    newPacket = new List<byte>();
+                    newPacket.Add(0xFE);
+                    newPacket.Add(0xFE);
+                }
+                else if ( data[x] == 0xfd )
+                {
+                    // we have a pcket end
+                    newPacket.Add(0xFD);
+
+                    // need to do something with it now
+                    Console.WriteLine("Packet acquired for decoding");
+                }
+                else
+                {
+                    newPacket.Add( data[x] );
+                }
+            }
+
         }
 
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // wait for final bytes to arrive as we are here pretty fast
-            Thread.Sleep(100);
+            Thread.Sleep(10);
 
             int bytestoread = _serialPort.BytesToRead;
 
-            Console.WriteLine("bytes available" + bytestoread );
+            Trace.WriteLine("bytes available" + bytestoread );
 
             byte[] buffer = new byte[bytestoread];
             _serialPort.Read(buffer, 0, bytestoread);
 
             for(int x=0;x<bytestoread; x++)
             {
-                Console.WriteLine("x: " + buffer[x]);
+                Trace.WriteLine("x: " + buffer[x].ToString("x2"));
             }
+
+            ReCreateIcomPacket(buffer);
 
             _serialPort.DiscardInBuffer();
         }
@@ -262,8 +297,8 @@ namespace serialtest
             b.Add(0x64);
             b.Add(0xe0);
             b.Add(0x15);
-            b.Add(0x02);    // S-meter level
-            //b.Add(0x00);
+            b.Add(0x02);    // S-meter level, return 2 btes of data
+            b.Add(0x00);
             b.Add(0xfd);
 
             byte[] d = b.ToArray();
