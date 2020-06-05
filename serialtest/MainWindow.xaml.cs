@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-// this brilliant software has bee nrealy useful on 14 day trial.
+// this brilliant software has been realy useful on 14 day trial.
 // https://www.eltima.com/products/serial-port-monitor/
 
 namespace serialtest
@@ -34,6 +34,9 @@ namespace serialtest
         public MainWindow()
         {
             InitializeComponent();
+
+            // connect up the RS232
+            StartConnecting();
 
             //uint firstInt = 987654321;
             //var array = IntToBCD5(firstInt);
@@ -73,13 +76,40 @@ namespace serialtest
             return bcd;
         }
 
+        /// <summary>
+        /// connecting button has been pressed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Connect(object sender, RoutedEventArgs e)
+        {            
+            StartConnecting();
+        }
+
+        private void GetComPorts()
         {
-            Console.WriteLine("connect");
+            // Get a list of serial port names.
+            string[] ports = SerialPort.GetPortNames();
+
+            Console.WriteLine("The following serial ports were found:");
+
+            // Display each port name to the console.
+            foreach (string port in ports)
+            {
+                Console.WriteLine(port);
+            }
+        }
+
+        /// <summary>
+        /// make the rs232 connection setup for an icom
+        /// </summary>
+        private void StartConnecting()
+        {
+            Console.WriteLine("connecting up");
 
             _serialPort = new SerialPort();
-            _serialPort.PortName = "COM8";//Set your board COM
-            _serialPort.BaudRate = 9600;
+            _serialPort.PortName = "COM8";//Set your board COM, look in device manager
+            _serialPort.BaudRate = 19200; // use the fastest speed possible
             _serialPort.StopBits = StopBits.One;
             _serialPort.Parity = Parity.None;
             _serialPort.DataBits = 8;
@@ -95,6 +125,59 @@ namespace serialtest
             connect.IsEnabled = false;
         }
 
+        private void DecodePacket(List<byte> packet)
+        {
+            for( int x=0;x<packet.Count;x++)
+            {
+                Trace.WriteLine(x + ": " + packet[x].ToString("x2"));
+            }
+
+            switch( packet[4])
+            {
+                case 0x15:
+                    // might be signal strength
+                    if ( packet[5] == 0x02 && packet.Count == 9 )
+                    {
+                        // we have signal strength
+                        //signalstrength.Text = packet[6].ToString();
+                        signalstrength.Dispatcher.Invoke(new Action(() => { signalstrength.Text = packet[7].ToString(); }));
+                    }
+                    break;
+
+                case 0x0:
+                    {
+                        if (packet.Count == 10)
+                        {
+
+                            //uint firstInt = 14296990;
+                            //var array = IntToBCD5(firstInt);
+                            //var outInt = BCD5ToInt(array);
+                            //MessageBox.Show(outInt.ToString());
+
+
+
+                            Trace.WriteLine("Frequency packet");
+                            byte[] array = new byte[5];
+                            array[0] = packet[4];
+                            array[1] = packet[5];
+                            array[2] = packet[6];
+                            array[3] = packet[7];
+                            array[4] = packet[8];
+                            int outInt = (int) (BCD5ToInt(array));
+                            double freq = outInt / 1e8;
+                            Console.WriteLine(outInt);
+
+                            //need an invoke here
+                            signalstrength.Dispatcher.Invoke(new Action(() => { Freq.Text = freq.ToString(); }));
+                            //Freq.Text = freq.ToString();
+                        }
+                    }
+                    break;
+
+            }
+
+        }
+
         static List<byte> newPacket;
 
         /// <summary>
@@ -102,9 +185,7 @@ namespace serialtest
         /// </summary>
         /// <param name="data"></param>
         private void ReCreateIcomPacket( byte [] data )
-        {
-            
-
+        {            
             for (int x=1;x<data.Length;x++)
             {
                 if ( data[x] == 0xFe && data[x-1] == 0xFE )
@@ -121,12 +202,14 @@ namespace serialtest
 
                     // need to do something with it now
                     Console.WriteLine("Packet acquired for decoding");
+                    DecodePacket(newPacket);
                 }
                 else
                 {
                     // some error checking
                     if (newPacket == null)
                     {
+                        // make a new packet
                         newPacket = new List<byte>();
                         newPacket.Add(0xFE);
                         newPacket.Add(0xFE);
@@ -135,13 +218,12 @@ namespace serialtest
                     newPacket.Add( data[x] );
                 }
             }
-
         }
 
         private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // wait for final bytes to arrive as we are here pretty fast
-            Thread.Sleep(10);
+            //Thread.Sleep(5);
 
             int bytestoread = _serialPort.BytesToRead;
 
@@ -180,13 +262,12 @@ namespace serialtest
 
             List<byte> b = new List<byte>();
 
-            // http://www.plicht.de/ekki/civ/civ-p41.html
             b.Add(0xfe);
             b.Add(0xfe);
             b.Add(0x64);
             b.Add(0xe0);
             b.Add(0x06);
-            b.Add( (byte) modulation.SelectedIndex);
+            b.Add((byte) (modulation.SelectedIndex ));
            // b.Add(0x00);
             b.Add(0xfd);
 
@@ -253,7 +334,7 @@ namespace serialtest
 
                     Console.WriteLine(bytestoread);
                 }
-                System.Threading.Thread.Sleep(200);
+                System.Threading.Thread.Sleep(100);
             }
 
             //for (int i = 0; i < 5; i++)
@@ -288,7 +369,26 @@ namespace serialtest
 
         private void Get_Signal_Strength(object sender, RoutedEventArgs e)
         {
+            for (int x = 0; x < 10; x++)
+            {
+                Console.WriteLine("Send");
 
+                //http://www.plicht.de/ekki/civ/civ-p32.html
+
+                List<byte> b = new List<byte>();
+
+                SendHeader(b);
+
+                b.Add(0x15);
+                b.Add(0x02);    // S-meter level, return 2 btes of data                             
+
+                SendFooter(b);
+
+                byte[] d = b.ToArray();
+                _serialPort.Write(d, 0, d.Length);
+
+                Thread.Sleep(50);
+            }
         }
 
         /// <summary>
@@ -298,24 +398,7 @@ namespace serialtest
         /// <param name="e"></param>
         private void RunTest(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Send");
-
-            //http://www.plicht.de/ekki/civ/civ-p32.html
-
-            List<byte> b = new List<byte>();
-
-            // http://www.plicht.de/ekki/civ/civ-p41.html
-            b.Add(0xfe);
-            b.Add(0xfe);
-            b.Add(0x64);
-            b.Add(0xe0);
-            b.Add(0x15);
-            b.Add(0x02);    // S-meter level, return 2 btes of data
-            //b.Add(0x00);
-            b.Add(0xfd);
-
-            byte[] d = b.ToArray();
-            _serialPort.Write(d, 0, d.Length);
+            GetComPorts();
         }
     }
 }
