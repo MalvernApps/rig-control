@@ -138,9 +138,16 @@ namespace serialtest
                     // might be signal strength
                     if ( packet[5] == 0x02 && packet.Count == 9 )
                     {
+
+                        int highlow = packet[6] & 0xF;
+                        int high = packet[7] >> 4;
+                        int low = packet[7] & 0xF;
+                        int number = 100* highlow + 10 * high + low;
+                        number /= 12;
+
                         // we have signal strength
                         //signalstrength.Text = packet[6].ToString();
-                        signalstrength.Dispatcher.Invoke(new Action(() => { signalstrength.Text = packet[7].ToString(); }));
+                        signalstrength.Dispatcher.Invoke(new Action(() => { signalstrength.Text = number.ToString(); }));
                     }
                     break;
 
@@ -148,14 +155,6 @@ namespace serialtest
                     {
                         if (packet.Count == 10)
                         {
-
-                            //uint firstInt = 14296990;
-                            //var array = IntToBCD5(firstInt);
-                            //var outInt = BCD5ToInt(array);
-                            //MessageBox.Show(outInt.ToString());
-
-
-
                             Trace.WriteLine("Frequency packet");
                             byte[] array = new byte[5];
                             array[0] = packet[4];
@@ -167,9 +166,8 @@ namespace serialtest
                             double freq = outInt / 1e8;
                             Console.WriteLine(outInt);
 
-                            //need an invoke here
+                            //need an invoke here as we are on the wrong thread
                             signalstrength.Dispatcher.Invoke(new Action(() => { Freq.Text = freq.ToString(); }));
-                            //Freq.Text = freq.ToString();
                         }
                     }
                     break;
